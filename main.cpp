@@ -7,36 +7,36 @@ int sign_up[100005];
 int per_day[100005];
 vector<int> books;
 vector<priority_queue<pair<int,int>>> libs;
-vector<pair<double,int>> rats;
+vector<pair<double,int>> ratios;
 int main(){
-    freopen("d.txt","r",stdin);
-    freopen("d_out.txt","w",stdout);
+    freopen("f.txt","r",stdin);
+    freopen("f_out.txt","w",stdout);
     IO;
     int bookno,libno,deadline;
     cin>>bookno>>libno>>deadline;
     books.resize(bookno);
-    for(auto &x : books)cin>>x;
+    for(auto &book : books)cin>>book;
     libs.resize(libno);
     for(int i=0;i<libno;i++){
         int book_per_lib;
         cin>>book_per_lib>>sign_up[i]>>per_day[i];
         long long score=0;
         for(int j=0;j<book_per_lib;j++){
-            int x;
-            cin>>x;
-            score+=books[x];
-            libs[i].push({books[x],x});
+            int book;
+            cin>>book;
+            score+=books[book];
+            libs[i].push({books[book],book});
         }
         double rat=0;
         rat=1.0*(score+per_day[i]);
         rat/=sign_up[i];
-        rats.push_back({rat,i});
+        ratios.push_back({rat,i});
     }
-    sort(rats.begin(),rats.end());
-    reverse(rats.begin(),rats.end());
+    sort(ratios.begin(),ratios.end());
+    reverse(ratios.begin(),ratios.end());
     int current_day=0;
     vector<pair<int,vector<int>>> sol;
-    for(auto p : rats){
+    for(auto p : ratios){
         int index=p.second;
         current_day+=sign_up[index];
         if(current_day>deadline)break;
@@ -44,12 +44,12 @@ int main(){
         int books_to_be_taken=(deadline-current_day)*per_day[index];
         auto q= libs[index];
         while(q.size()&&books_to_be_taken){
-            auto b = q.top();
+            auto book = q.top();
             q.pop();
-            if(!scanned[b.second]){
-                scanned[b.second]=true;
+            if(!scanned[book.second]){
+                scanned[book.second]=true;
                 books_to_be_taken--;
-                taken_books.push_back(b.second);
+                taken_books.push_back(book.second);
             }
         }
         if(taken_books.size())
@@ -57,11 +57,14 @@ int main(){
         else current_day-=sign_up[index];
     }
     cout<<sol.size()<<"\n";
+    long long score=0;
     for(auto p : sol){
         cout<<p.first<<" "<<p.second.size()<<"\n";
-        for(auto x : p.second){
-            cout<<x<<" ";
+        for(auto book : p.second){
+            cout<<book<<" ";
+            score+=books[book];
         }
         cout<<"\n";
     }
+    cerr<<score<<"\n";
 }
